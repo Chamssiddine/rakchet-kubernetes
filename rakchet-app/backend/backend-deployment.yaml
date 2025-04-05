@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: chamseddinedocker/backend:1.1
+          imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: 100m
+              memory: 300Mi
+            limits:
+              memory: 400Mi
+          ports:
+            - containerPort: 3100
+          # Replace delcaring env directly by using Configmap(env) and secrets(for passwords)
+          # env:
+          #   - name:   PORT
+          #     value: "3100"
+          #   - name: DATABASE_URL
+          #     value: "postgresql://postgres:postgres@postgres:5433/encadrinyv01?schema=public"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+spec:
+  selector:
+    app: backend
+  type: LoadBalancer
+  ports:
+    - port: 3100
+      targetPort: 3100
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: rakchet-app-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: backend
+  minReplicas: 1
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 60
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 75
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 75
+
+  maxReplicas: 4

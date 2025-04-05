@@ -1,0 +1,31 @@
+docker buildx build -t chamseddinedocker/backend .
+[+] Building 2.1s (10/11)                                                                                                                 docker:default
+ => [internal] load build definition from Dockerfile                                                                                                0.0s
+ => => transferring dockerfile: 495B                                                                                                                0.0s
+ => [internal] load metadata for docker.io/library/node:20-alpine                                                                                   0.7s
+ => [auth] library/node:pull token for registry-1.docker.io                                                                                         0.0s
+ => [internal] load .dockerignore                                                                                                                   0.0s
+ => => transferring context: 2B                                                                                                                     0.0s
+ => [1/6] FROM docker.io/library/node:20-alpine@sha256:8bda036ddd59ea51a23bc1a1035d3b5c614e72c01366d989f4120e8adca196d4                             0.0s
+ => [internal] load build context                                                                                                                   0.0s
+ => => transferring context: 1.99kB                                                                                                                 0.0s
+ => CACHED [2/6] WORKDIR /app                                                                                                                       0.0s
+ => CACHED [3/6] COPY package*.json ./                                                                                                              0.0s
+ => CACHED [4/6] RUN npm install                                                                                                                    0.0s
+ => ERROR [5/6] RUN npx prisma generate --schema=./src/prisma/schema.prisma                                                                         1.0s
+------
+ > [5/6] RUN npx prisma generate --schema=./src/prisma/schema.prisma:
+0.733 prisma:warn Prisma failed to detect the libssl/openssl version to use, and may not work as expected. Defaulting to "openssl-1.1.x".
+0.733 Please manually install OpenSSL and try installing Prisma again.
+0.816 Error: Provided --schema at ./src/prisma/schema.prisma doesn't exist.
+------
+Dockerfile:14
+--------------------
+  12 |
+  13 |     # Generate Prisma client
+  14 | >>> RUN npx prisma generate --schema=./src/prisma/schema.prisma
+  15 |     # Copy the rest of the app
+  16 |     COPY . .
+--------------------
+ERROR: failed to solve: process "/bin/sh -c npx prisma generate --schema=./src/prisma/schema.prisma" did not complete successfully: exit code: 1
+/tmp/rakchet-kubernetes/backend$
